@@ -1,0 +1,108 @@
+<div class="w3-container">
+  <h1>{{title}}</h1>
+
+
+<div class="w3-container">
+<button id="rulesbutton" onclick="myFunction('rules', 'rulesbutton')" class="w3-button w3-xlarge">
+<h2>See Rules</h2></button>
+
+<button id="rulesbutton" (click)="endRound()" class="w3-button w3-xlarge">
+<h2>Complete Round</h2></button>
+
+<h2>{{error}}</h2>
+<h2>currentRound {{currentRound}}</h2>
+<h2>availableCapacity {{availableCapacity}}</h2>
+<h2>consumedCapacity {{consumedCapacity}}</h2>
+<h2>minRollStorySuccess {{minRollStorySuccess}}</h2>
+<h2>completedStories {{completedStories}}</h2>
+<h2>rolledReport {{rolledReport}}</h2>
+
+<div id="rules" class="w3-hide w3-container ">
+  <ul >
+			<li>You are a newly formed Agile team.  You are trying to grow your capacity to deliver stories, while still delivering working software. </li>
+			<li>Your team will play a series of rounds. Each round represents three 2-week sprints.</li>
+			<li>For each round, your team will start with a capacity for work represented as a number.  This number starts at 10.</li>
+			<li>As a team, you will pick the actions you wish to complete in the round to improve future capacity. They'll provide bonuses in the current round or in future rounds.</li>
+			<li>Just like in real life, you don't really know the benefit of an improvement until you experiement with it. So effects of actions will be hidden until round end.</li>
+			<li>The rest of your capacity will be spent committing to user stories. Don't let this get too low or you might get a visit from senior management! </li>
+			<li>Once your team agrees on the actions to choose for a round, click "Complete Round".</li>
+			<li>The game will show you the results of the actions your chose, and update your capacity for future rounds.</li>
+			<li>For each user story, the game will roll a die for you. If it is 3 or higher, you get it done!</li>
+			<li>The game will then move to the next round.  You'll find new actions available to you as your team gets more experienced. </li>
+
+			</ul>
+</div>
+
+
+
+
+  <div class="w3-container">
+
+    <div class="w3-container  w3-row">
+      <div class="list"
+           cdkDropList
+           #avaiableList="cdkDropList"
+           [cdkDropListData]="available_actions"
+           [cdkDropListConnectedTo]="[selectedList]"
+           (cdkDropListDropped)="onDrop($event)">
+        <h2>Available Actions</h2>
+		
+		<div class="w3-container todo-container">
+        <mat-card class="w3-container w3-quarter w3-round-large w3-margin" *ngFor="let avaiable_action of available_actions" cdkDrag>
+          <mat-card-header >
+            <mat-card-title class="w3-xlarge">{{avaiable_action.name}}</mat-card-title> <br />		
+          </mat-card-header>
+		  <mat-card-content class="w3-large"><div class="w3-xlarge w3-right-align">Point Cost: {{avaiable_action.cost}}</div><div>{{avaiable_action.description}}</div></mat-card-content>
+        </mat-card>
+		</div>
+      </div>
+    </div>
+
+    <div class=" w3-container w3-row">
+      <div class="list"
+           cdkDropList
+           #selectedList="cdkDropList"
+           [cdkDropListData]="selected_actions"
+           [cdkDropListConnectedTo]="avaiableList"
+           (cdkDropListDropped)="onDrop($event)">
+        <h2>Actions Planned for This Round (Total Capacity: {{availableCapacity[currentRound-1]}})</h2>
+		<div class="w3-container  done-container">
+		<mat-card class="w3-container w3-quarter w3-round-large w3-margin w3-border w3-border-red" >
+          <mat-card-header >
+            <mat-card-title class="w3-xlarge">Commit to User Stories</mat-card-title> <br />		
+          </mat-card-header>
+		  <mat-card-content class="w3-large"><div class="w3-xlarge w3-right-align"># of Stories: {{findConsumedCapacity()}}</div><div>Each story costs 1 point</div></mat-card-content>
+        </mat-card>
+		
+        <mat-card class="w3-container w3-quarter w3-round-large w3-margin" *ngFor="let selected_action of selected_actions" cdkDrag>
+          <mat-card-header >
+            <mat-card-title class="w3-xlarge">{{selected_action.name}}</mat-card-title> <br />
+			
+          </mat-card-header>
+		  <mat-card-content class="w3-large"><div class="w3-xlarge w3-right-align">Point Cost: {{selected_action.cost}}</div><div>{{selected_action.description}}</div></mat-card-content>
+        </mat-card>
+		</div>
+		
+      </div>
+    </div>
+	
+	
+	<div class=" w3-container w3-row">
+      <div class="list">
+        <h2>Ongoing Effects</h2>
+		<div class="w3-container  ongoing-container">
+			<mat-card class="w3-container w3-quarter w3-round-large w3-margin" *ngFor="let ongoing_action of ongoing_actions" >
+			  <mat-card-header >
+				<mat-card-title class="w3-xlarge">{{ongoing_action.name}}</mat-card-title> <br />
+				
+			  </mat-card-header>
+			  <mat-card-content class="w3-large"><div>{{ongoing_action.explanation}}</div></mat-card-content>
+			</mat-card>
+		</div>
+		</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
