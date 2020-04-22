@@ -7,6 +7,14 @@
 
 .w3-container{
 	font-family: "Segoe UI",Arial,sans-serif;
+	background-color: RGBA(255, 255, 255, 1);
+	color: black;
+}
+
+.top-container{
+background-color: RGBA(255, 255, 255, 1);
+height: 100%;	
+
 }
 
 h2 {
@@ -23,29 +31,29 @@ h2 {
 }
 
 .todo-container, .done-container, .ongoing-container, .results-container{
-	min-height: 400px;
-	background-color: RGBA(255, 255, 255, 0.5);
+	min-height: 225px;
+	max-width: 1200px;
+	background-color: RGBA(30, 70, 124, 0.5);
 }
 
 
 mat-card, panel-group {
   cursor: pointer;
   color: RGBA(0, 0, 0, 1);
-  background-color: RGBA(255, 255, 255, 0.5);
-  height: 200px;
-  width: 400px;
+  background-color: RGBA(30, 70, 124, 0.5);
+  height: 175px;
+  width: 300px;
   font-family: "Segoe UI",Arial,sans-serif;
 }
 
 mat-card-title{
-	background-color: RGBA(255, 255, 255, 0.0);
+	background-color: RGBA(30, 70, 124, 0.0);
 	color: RGBA(0, 0, 0, 1);
 	font-family: "Segoe UI",Arial,sans-serif;
 }
 
 .list {
-  border: RGBA(46, 49, 49, .7) solid 1px;
-  border-radius: 2px;
+
 }
 
 .list-item {

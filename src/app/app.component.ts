@@ -84,7 +84,7 @@ export class AppComponent {
 	{
       name: 'Eliminate Feature Branching',
       description: 'All work is done on Main or Trunk',
-	  explanation: 'When teams useFeature Branches they’re notreally using continuous integration. Feature branching optimizes for the individual while harming the team. Capacity increased by 1 for the next 2 rounds.',
+	  explanation: "Teams using feature branches aren't not really using continuous integration. It optimizes for the individual while harming the team. Capacity increased by 1 for the next 2 rounds.",
 	  cost: 1,
 	  duration: 2,
 	  effect: function(self){
@@ -96,6 +96,64 @@ export class AppComponent {
     }
   ];
 
+
+  upcoming_actions = [
+   {
+      name: 'Social Time',
+      description: 'Promote some social time e.g. common coffee breaks, team lunches.',
+	  explanation: 'Building trust requires relationships to go beyond the work you do. Taking time to socialize helps the team. Capacity increased by 1 for the rest of the game.',
+	  cost: 1,
+	  duration: this.maxRounds,
+	  effect: function(self){
+		  for(var i=self.currentRound; i<self.maxRounds; i++){
+			 self.addToCapacity(self, i, 1);
+			
+		  }  
+		    
+	  }
+    },
+	{
+      name: 'Firefighter Award',
+      description: 'Offer an award to anyone who solves a really hard and pressing issue.',
+	  explanation: 'Promoting a firefighting culture promotes individual behaviour and, surprisingly, the starting of fires. Capacity reduced by 1 for the rest of the game.',
+	  cost: 1,
+	  duration: this.maxRounds,
+	  effect: function(self){
+		  for(var i=self.currentRound; i<self.maxRounds; i++){
+			 self.addToCapacity(self, i, -1);
+			
+		  }  
+		    
+	  }
+    },
+	{
+      name: 'Unit Testing',
+      description: 'Introduce Unit Testing. Warning: have a build server first, or this will do nothing!',
+	  explanation: 'Unit tests save time down the road by preventing rework, but it takes time to see the result.  Wait another round, then capacity increased by 1 for the rest of the game.',
+	  cost: 1,
+	  duration: this.maxRounds,
+	  effect: function(self){
+		  if (self.ongoing_actions.filter(function(e) { return e.name === 'Build Server'; }).length > 0
+				|| (self.selected_actions.filter(function(e) { return e.name === 'Build Server'; }).length > 0)) {
+			  for(var i=self.currentRound+1; i<self.maxRounds; i++){
+				 self.addToCapacity(self, i, 1);
+				
+			  }  
+			  this.duration = self.maxRounds;
+			  this.repeatable = false;
+			  this.explanation = 'Unit tests save time down the road by preventing rework, but it takes time to see the result.  Wait another round, then capacity increased by 1 for the rest of the game.'
+		    
+		   }
+		   else{
+			   this.duration = 0;
+			   this.repeatable = true;
+			   this.explanation = 'Without a Build Server, Unit Tests cannot be used to their full potenial. Trying creting a Build Server and trying this card again.'
+		   }
+      }
+	}
+  ];
+  
+  
   selected_actions = [
     
   ];
@@ -131,6 +189,14 @@ export class AppComponent {
 	   
   }
   
+  
+  getAvailableCapacity(roundNumber){
+	  if (!this.availableCapacity[roundNumber]){
+		  this.availableCapacity[roundNumber] = 10;
+	  }
+	  return this.availableCapacity[roundNumber];
+  }
+  
   findConsumedCapacity(){
 	  if (!this.availableCapacity[this.currentRound-1]){
 		  this.availableCapacity[this.currentRound-1] = 10;
@@ -158,6 +224,7 @@ export class AppComponent {
 	  this.processSelectedActions();
 	  this.checkForCompletedStories(committedStories);
 	  this.resetRound();
+	  this.fillAvailableActions();
 	  this.pushToDisplay(this);
 	  this.hideRound();
 	  
@@ -234,12 +301,16 @@ export class AppComponent {
 	  if (this.currentRound > this.maxRounds){
 			this.error = "GAME OVER";
 	  }
-	  
-
-	  
-	  
+	   
 	  
   }
+  
+ fillAvailableActions(){
+		while (this.available_actions.length < 5 && this.upcoming_actions.length > 0){
+			
+			this.available_actions.push(this.upcoming_actions.pop());
+		}
+}	
   
   hideRound(){
 	  var available_zone = document.getElementById("available_zone");
@@ -247,11 +318,13 @@ export class AppComponent {
 	  var ongoing_zone = document.getElementById("ongoing_zone");
 	  var round_zone = document.getElementById("round_zone");
 	  var complete_button = document.getElementById("completebutton");
+	  var round_number = document.getElementById("roundNumber");
 	  
 	  available_zone.className += " w3-hide";
 	  selected_zone.className += " w3-hide";
 	  ongoing_zone.className += " w3-hide";
 	  complete_button.className += " w3-hide";
+	  round_number.className += " w3-hide";
 	  round_zone.className += " w3-show";
 	  
   }
@@ -262,11 +335,13 @@ export class AppComponent {
 	  var ongoing_zone = document.getElementById("ongoing_zone");
 	  var round_zone = document.getElementById("round_zone");
 	  var complete_button = document.getElementById("completebutton");
+	  var round_number = document.getElementById("roundNumber");
 	  
 	  available_zone.className  = available_zone.className.replace(" w3-hide", "");
 	  selected_zone.className  = selected_zone.className.replace(" w3-hide", "");
 	  ongoing_zone.className  = ongoing_zone.className.replace(" w3-hide", "");
 	  complete_button.className  = complete_button.className.replace(" w3-hide", "");
+	  round_number.className  = round_number.className.replace(" w3-hide", "");
 	  round_zone.className  = round_zone.className.replace(" w3-show", "");
 	  
   }
