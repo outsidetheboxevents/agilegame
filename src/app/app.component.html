@@ -3,19 +3,25 @@
 
 
 <div class="w3-container">
-<button id="rulesbutton" onclick="myFunction('rules', 'rulesbutton')" class="w3-button w3-xlarge">
-<h2>See Rules</h2></button>
+<button id="rulesbutton" (click)="seeRules('rules', 'rulesbutton')" class="w3-button w3-xlarge w3-dark-grey w3-border w3-border-red w3-round-large w3-margin">
+See Rules</button>
 
-<button id="rulesbutton" (click)="endRound()" class="w3-button w3-xlarge">
-<h2>Complete Round</h2></button>
+<button id="completebutton" (click)="endRound()" class="w3-button w3-xlarge w3-dark-grey w3-border w3-border-red w3-round-large w3-margin">
+Complete Round</button>
 
-<h2>{{error}}</h2>
-<h2>currentRound {{currentRound}}</h2>
-<h2>availableCapacity {{availableCapacity}}</h2>
-<h2>consumedCapacity {{consumedCapacity}}</h2>
-<h2>minRollStorySuccess {{minRollStorySuccess}}</h2>
-<h2>completedStories {{completedStories}}</h2>
-<h2>rolledReport {{rolledReport}}</h2>
+
+<h2>Last Round Story Points: {{completedStories[completedStories.length-1]}}</h2>
+<h2>Total Story Points: {{sumArray(completedStories)}}</h2>
+
+<!--
+<h6>{{error}}</h6>
+<h6>currentRound {{currentRound}}</h6>
+<h6>availableCapacity {{availableCapacity}}</h6>
+<h6>consumedCapacity {{consumedCapacity}}</h6>
+<h6>minRollStorySuccess {{minRollStorySuccess}}</h6>
+<h6>completedStories {{completedStories}}</h6>
+<h6>rolledReport {{rolledReport}}</h6>
+-->
 
 <div id="rules" class="w3-hide w3-container ">
   <ul >
@@ -23,7 +29,7 @@
 			<li>Your team will play a series of rounds. Each round represents three 2-week sprints.</li>
 			<li>For each round, your team will start with a capacity for work represented as a number.  This number starts at 10.</li>
 			<li>As a team, you will pick the actions you wish to complete in the round to improve future capacity. They'll provide bonuses in the current round or in future rounds.</li>
-			<li>Just like in real life, you don't really know the benefit of an improvement until you experiement with it. So effects of actions will be hidden until round end.</li>
+			<li>Just like in real life, you don't really know the benefit of an improvement until you experiment with it. So effects of actions will be hidden until round end.</li>
 			<li>The rest of your capacity will be spent committing to user stories. Don't let this get too low or you might get a visit from senior management! </li>
 			<li>Once your team agrees on the actions to choose for a round, click "Complete Round".</li>
 			<li>The game will show you the results of the actions your chose, and update your capacity for future rounds.</li>
@@ -36,9 +42,30 @@
 
 
 
-  <div class="w3-container">
-
-    <div class="w3-container  w3-row">
+  <div class="w3-container" >
+  
+	<div class=" w3-container w3-row w3-hide" id="round_zone">
+      <div class="list">
+        <h2>Results of Round {{currentRound-1}}</h2>
+		<button id="nextbutton" (click)="startRound()" class="w3-button w3-xlarge w3-dark-grey w3-border w3-border-red w3-round-large w3-margin">Begin Next Round</button>
+		<div class="w3-container  results-container">
+			<mat-card class="w3-container w3-quarter w3-round-large w3-margin" *ngFor="let round_result of round_results" >
+			  <mat-card-header >
+				<mat-card-title class="w3-xlarge">{{round_result.name}}</mat-card-title> <br />
+				
+			  </mat-card-header>
+			  <mat-card-content class="w3-large">
+			  <div *ngFor="let aLine of round_result.report">{{aLine}}</div>
+			  <div>{{round_result.explanation}}</div>
+			  </mat-card-content>
+			</mat-card>
+		</div>
+		</div>
+      </div>
+	
+	
+	
+    <div class="w3-container  w3-row" id="available_zone">
       <div class="list"
            cdkDropList
            #avaiableList="cdkDropList"
@@ -58,7 +85,7 @@
       </div>
     </div>
 
-    <div class=" w3-container w3-row">
+    <div class=" w3-container w3-row" id="selected_zone">
       <div class="list"
            cdkDropList
            #selectedList="cdkDropList"
@@ -87,11 +114,11 @@
     </div>
 	
 	
-	<div class=" w3-container w3-row">
+	<div class=" w3-container w3-row" id="ongoing_zone">
       <div class="list">
         <h2>Ongoing Effects</h2>
 		<div class="w3-container  ongoing-container">
-			<mat-card class="w3-container w3-quarter w3-round-large w3-margin" *ngFor="let ongoing_action of ongoing_actions" >
+			<mat-card class="w3-container w3-quarter w3-round-large w3-margin w3-border w3-border-green" *ngFor="let ongoing_action of ongoing_actions" >
 			  <mat-card-header >
 				<mat-card-title class="w3-xlarge">{{ongoing_action.name}}</mat-card-title> <br />
 				

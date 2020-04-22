@@ -11,8 +11,8 @@
 
 h2 {
   display: flex;
-  justify-content: center;
-  align-self: center;
+  justify-content: left;
+  align-self: left;
 }
 
 .list-container {
@@ -22,7 +22,7 @@ h2 {
 
 }
 
-.todo-container, .done-container, .ongoing-container{
+.todo-container, .done-container, .ongoing-container, .results-container{
 	min-height: 400px;
 	background-color: RGBA(255, 255, 255, 0.5);
 }

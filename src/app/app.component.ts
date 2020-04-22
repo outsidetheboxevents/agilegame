@@ -17,11 +17,11 @@ export class AppComponent {
   maxRounds = 20;
   availableCapacity = [10, 10];
   consumedCapacity = [10, 10];
-  completedStories = [0, 0];
+  completedStories = [0];
   currentRound = 1;
   minRollStorySuccess = [3, 3];
   error = "none";
-  rolledReport = "No rolls yet";
+  rolledReport = [];
 
   available_actions = [
     {
@@ -100,6 +100,11 @@ export class AppComponent {
     
   ];
   
+  round_results = [
+  
+  
+  ];
+  
   ongoing_actions = [
     
   ];
@@ -122,11 +127,15 @@ export class AppComponent {
 	   self.minRollStorySuccess=[...self.minRollStorySuccess];
 	   self.completedStories= [...self.completedStories];
 		self.currentRound = self.currentRound + 0;
-		self.rolledReport = self.rolledReport + "";
+		self.rolledReport = [...self.rolledReport];
 	   
   }
   
   findConsumedCapacity(){
+	  if (!this.availableCapacity[this.currentRound-1]){
+		  this.availableCapacity[this.currentRound-1] = 10;
+	  }
+	  
 	  this.consumedCapacity[this.currentRound-1] = this.availableCapacity[this.currentRound-1];
 	  this.selected_actions.forEach(item => {
         this.consumedCapacity[this.currentRound-1] = this.consumedCapacity[this.currentRound-1] - item.cost;
@@ -144,15 +153,17 @@ export class AppComponent {
   }
   
   endRound(){
-	  
+	  this.round_results = [];
 	  var committedStories = this.findConsumedCapacity();
 	  this.processSelectedActions();
 	  this.checkForCompletedStories(committedStories);
 	  this.resetRound();
 	  this.pushToDisplay(this);
-	  
+	  this.hideRound();
 	  
   }
+  
+  
   
   processSelectedActions(){
 	  this.selected_actions.forEach(item => {
@@ -165,7 +176,7 @@ export class AppComponent {
 	   else{
 			//don't do it
 	   }
-	   
+	   this.round_results.push(item);
       });
 	  
   }
@@ -173,18 +184,20 @@ export class AppComponent {
   checkForCompletedStories(committedStories){
 	  this.error = "Processing this many stories" + committedStories;
 	  this.completedStories[this.currentRound -1] = 0;
-	  this.rolledReport = "Rolled for stories: #";
+	  this.rolledReport[0] = "Rolling for " + committedStories + " stories";
+	  this.rolledReport[1]	= "Success on " +  this.minRollStorySuccess[this.currentRound -1] + "+";
+	  this.rolledReport[2] = "Rolled: ";
 	  for(var i=0; i < committedStories; i++){
 			 var dieRoll = (Math.floor(Math.random() * 6) + 1 );
-			 this.rolledReport =  this.rolledReport + " "+ dieRoll;
+			 this.rolledReport[2] =  this.rolledReport[2] + " "+ dieRoll;
 			 if (dieRoll >= this.minRollStorySuccess[this.currentRound -1]){
 				 this.completedStories[this.currentRound -1] = this.completedStories[this.currentRound -1]+1;
 
 			 }
 			 
 		  }
-	  this.rolledReport = this.rolledReport + ". Successes: " + this.completedStories[this.currentRound -1];
-	  
+	  this.rolledReport[3]	="Successes: " + this.completedStories[this.currentRound -1];
+	  this.round_results.push({name:"Completed Stories", report: this.rolledReport});
   }
   
   
@@ -222,10 +235,61 @@ export class AppComponent {
 			this.error = "GAME OVER";
 	  }
 	  
+
 	  
 	  
 	  
   }
   
+  hideRound(){
+	  var available_zone = document.getElementById("available_zone");
+	  var selected_zone = document.getElementById("selected_zone");
+	  var ongoing_zone = document.getElementById("ongoing_zone");
+	  var round_zone = document.getElementById("round_zone");
+	  var complete_button = document.getElementById("completebutton");
+	  
+	  available_zone.className += " w3-hide";
+	  selected_zone.className += " w3-hide";
+	  ongoing_zone.className += " w3-hide";
+	  complete_button.className += " w3-hide";
+	  round_zone.className += " w3-show";
+	  
+  }
+  
+   startRound(){
+	  var available_zone = document.getElementById("available_zone");
+	  var selected_zone = document.getElementById("selected_zone");
+	  var ongoing_zone = document.getElementById("ongoing_zone");
+	  var round_zone = document.getElementById("round_zone");
+	  var complete_button = document.getElementById("completebutton");
+	  
+	  available_zone.className  = available_zone.className.replace(" w3-hide", "");
+	  selected_zone.className  = selected_zone.className.replace(" w3-hide", "");
+	  ongoing_zone.className  = ongoing_zone.className.replace(" w3-hide", "");
+	  complete_button.className  = complete_button.className.replace(" w3-hide", "");
+	  round_zone.className  = round_zone.className.replace(" w3-show", "");
+	  
+  }
+  
+  seeRules(id, buttonid) {
+	  var x = document.getElementById(id);
+	  var button = document.getElementById(buttonid);
+	  if (x.className.indexOf("w3-show") == -1) {
+		x.className += " w3-show";
+		button.innerHTML = 'Hide Rules';
+	  } else { 
+		x.className = x.className.replace(" w3-show", "");
+		button.innerHTML = 'Show Rules';
+	  }
+	  
+	}
+  
+  sumArray(array){
+	  var total = 0;
+	  for (var i=0; i<array.length; i++){
+		  total = total + array[i];
+	  }
+	  return total;
+  }
   
 }
